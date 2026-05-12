@@ -19,11 +19,17 @@ ipl_ball = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWAiQzsHzlwIvXxqIaG
 balls = pd.read_csv(ipl_ball)
 
 ball_withmatch = balls.merge(matches, on='ID', how='inner').copy()
-ball_withmatch = ball_withmatch.rename(columns={'player_of_match': 'Player_of_Match'})
+ball_withmatch = ball_withmatch.rename(columns={
+    'player_of_match': 'Player_of_Match',
+    'BattingTeam_x': 'BattingTeam'
+})
 ball_withmatch['BowlingTeam'] = ball_withmatch.apply(
     lambda x: x['Team1'] if x['Team2'] == x['BattingTeam'] else x['Team2'], axis=1
 )
-batter_data = ball_withmatch[np.append(balls.columns.values, ['BowlingTeam', 'Player_of_Match'])]
+
+keep_cols = [c for c in balls.columns.values if c in ball_withmatch.columns]
+batter_data = ball_withmatch[keep_cols + ['BowlingTeam', 'Player_of_Match']]
+
 
 def team1vsteam2(team, team2):
     df = matches[((matches['Team1'] == team) & (matches['Team2'] == team2)) | (
@@ -32,7 +38,6 @@ def team1vsteam2(team, team2):
     won = df[df.WinningTeam == team].shape[0]
     nr = df[df.WinningTeam.isnull()].shape[0]
     loss = mp - won - nr
-
     return {'matchesplayed': mp,
             'won': won,
             'loss': loss,
@@ -82,7 +87,7 @@ def batsmanRecord(batsman, df):
         strike_rate = runs / nballs * 100
     else:
         strike_rate = 0
-    gb = df.groupby('ID').sum()
+    gb = df.groupby('ID').sum(numeric_only=True)
     fifties = gb[(gb.batsman_run >= 50) & (gb.batsman_run < 100)].shape[0]
     hundreds = gb[gb.batsman_run >= 100].shape[0]
     try:
@@ -110,7 +115,6 @@ def batsmanRecord(batsman, df):
         'notOut': not_out,
         'mom': mom
     }
-
     return data
 
 
@@ -120,7 +124,7 @@ def batsmanVsTeam(batsman, team, df):
 
 
 def batsmanAPI(batsman, balls=batter_data):
-    df = balls[balls.innings.isin([1, 2])]  
+    df = balls[balls.innings.isin([1, 2])]
     self_record = batsmanRecord(batsman, df=df)
     TEAMS = matches.Team1.unique()
     against = {team: batsmanVsTeam(batsman, team, df) for team in TEAMS}
@@ -130,27 +134,31 @@ def batsmanAPI(batsman, balls=batter_data):
     }
     return json.dumps(data, cls=NpEncoder)
 
+
 bowler_data = batter_data.copy()
+
 
 def bowlerRun(x):
     if x['extra_type'] in ['penalty', 'legbyes', 'byes']:
         return 0
     else:
         return x['total_run']
+
+
 bowler_data['bowler_run'] = bowler_data[['extra_type', 'total_run']].apply(bowlerRun, axis=1)
+
 
 def bowlerWicket(x):
     if x['kind'] in ['caught', 'caught and bowled', 'bowled', 'stumped', 'lbw', 'hit wicket']:
         return x['isWicketDelivery']
     else:
         return 0
+
+
 bowler_data['isBowlerWicket'] = bowler_data[['kind', 'isWicketDelivery']].apply(bowlerWicket, axis=1)
 
 
 def bowlerRecord(bowler, df):
-    #if df.empty:
-        #return np.nan
-
     df = df[df['bowler'] == bowler]
     inngs = df.ID.unique().shape[0]
     nballs = df[~(df.extra_type.isin(['wides', 'noballs']))].shape[0]
@@ -173,16 +181,16 @@ def bowlerRecord(bowler, df):
     else:
         strike_rate = np.nan
 
-    gb = df.groupby('ID').sum()
+    gb = df.groupby('ID').sum(numeric_only=True)
     w3 = gb[(gb.isBowlerWicket >= 3)].shape[0]
 
     best_wicket = gb.sort_values(['isBowlerWicket', 'bowler_run'], ascending=[False, True])[
         ['isBowlerWicket', 'bowler_run']].head(1).values
     if best_wicket.size > 0:
-
         best_figure = f'{best_wicket[0][0]}/{best_wicket[0][1]}'
     else:
         best_figure = np.nan
+
     mom = df[df.Player_of_Match == bowler].drop_duplicates('ID', keep='first').shape[0]
     data = {
         'innings': inngs,
@@ -197,7 +205,6 @@ def bowlerRecord(bowler, df):
         '3+W': w3,
         'mom': mom
     }
-
     return data
 
 
@@ -207,7 +214,7 @@ def bowlerVsTeam(bowler, team, df):
 
 
 def bowlerAPI(bowler, balls=bowler_data):
-    df = balls[balls.innings.isin([1, 2])]  # Excluding Super overs
+    df = balls[balls.innings.isin([1, 2])]
     self_record = bowlerRecord(bowler, df=df)
     TEAMS = matches.Team1.unique()
     against = {team: bowlerVsTeam(bowler, team, df) for team in TEAMS}
