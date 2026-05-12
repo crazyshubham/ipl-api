@@ -12,10 +12,10 @@ class NpEncoder(json.JSONEncoder):
             return obj.tolist()
         return super(NpEncoder, self).default(obj)
 
-ipl_matches = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2DUdUbaKx_Co9F0FSnIlyS-8kp4aKv_I0-qzNeghiZHAI_hw94gKG22XTxNJHMFnFVKsO4xWOdIs/pub?gid=1655759976&single=true&output=csv"
+ipl_matches = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9ONpGHz4w0MiIPFXhxUtxD8m51hRJBOsG0JBVbymvVc6TUliolixfvufch_4ypfY9h-dpvyd1V7zF/pub?gid=766438584&single=true&output=csv"
 matches = pd.read_csv(ipl_matches)
 
-ipl_ball = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRu6cb6Pj8C9elJc5ubswjVTObommsITlNsFy5X0EiBY7S-lsHEUqx3g_M16r50Ytjc0XQCdGDyzE_Y/pub?output=csv"
+ipl_ball = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWAiQzsHzlwIvXxqIaGBv6mg6hls9LL8sqp5MDgIIafYd1_nDVBqXDxHUABQAdko8ZK3QOJRyRtdZH/pub?gid=368248622&single=true&output=csv"
 balls = pd.read_csv(ipl_ball)
 
 ball_withmatch = balls.merge(matches, on='ID', how='inner').copy()
