@@ -136,6 +136,7 @@ def bowlerRun(x):
         return 0
     else:
         return x['total_run']
+bowler_data['bowler_run'] = bowler_data[['extra_type', 'total_run']].apply(bowlerRun, axis=1)
 
 def bowlerWicket(x):
     if x['kind'] in ['caught', 'caught and bowled', 'bowled', 'stumped', 'lbw', 'hit wicket']:
