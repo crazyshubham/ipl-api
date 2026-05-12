@@ -19,9 +19,10 @@ ipl_ball = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWAiQzsHzlwIvXxqIaG
 balls = pd.read_csv(ipl_ball)
 
 ball_withmatch = balls.merge(matches, on='ID', how='inner').copy()
-ball_withmatch['BowlingTeam'] = ball_withmatch.Team1 + ball_withmatch.Team2
-ball_withmatch['BowlingTeam'] = ball_withmatch[['BowlingTeam', 'BattingTeam']].apply(lambda x: x.values[0].replace(x.values[1], ''), axis=1)
 ball_withmatch = ball_withmatch.rename(columns={'player_of_match': 'Player_of_Match'})
+ball_withmatch['BowlingTeam'] = ball_withmatch.apply(
+    lambda x: x['Team1'] if x['Team2'] == x['BattingTeam'] else x['Team2'], axis=1
+)
 batter_data = ball_withmatch[np.append(balls.columns.values, ['BowlingTeam', 'Player_of_Match'])]
 
 def team1vsteam2(team, team2):
