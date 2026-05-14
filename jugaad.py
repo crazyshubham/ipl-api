@@ -7,6 +7,8 @@ class NpEncoder(json.JSONEncoder):
         if isinstance(obj, np.integer):
             return int(obj)
         if isinstance(obj, np.floating):
+            if np.isnan(obj) or np.isinf(obj):
+                return None           
             return float(obj)
         if isinstance(obj, np.ndarray):
             return obj.tolist()
