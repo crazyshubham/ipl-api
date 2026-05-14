@@ -41,7 +41,13 @@ def bowling_record():
     bowler_name = request.args.get('bowler')
     response = jugaad.bowlerAPI(bowler_name)
     return response
-
+    
+@app.route('/api/players')
+def players():
+    batters = list(jugaad.batter_data['batter'].unique())
+    bowlers = list(jugaad.bowler_data['bowler'].unique())
+    all_players = list(set(batters + bowlers))
+    return jsonify({'players': sorted(all_players)})
 
 if __name__ == '__main__':
     app.run(debug=True)
