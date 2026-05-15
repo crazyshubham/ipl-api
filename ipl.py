@@ -3,6 +3,7 @@ import numpy as np
 
 ipl_matches = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9ONpGHz4w0MiIPFXhxUtxD8m51hRJBOsG0JBVbymvVc6TUliolixfvufch_4ypfY9h-dpvyd1V7zF/pub?gid=766438584&single=true&output=csv"
 matches = pd.read_csv(ipl_matches)
+matches.replace({'Royal Challengers Bangalore': 'Royal Challengers Bengaluru', 'Delhi Daredevils': 'Delhi Capitals', 'Kings XI Punjab': 'Punjab Kings', 'Rising Pune Supergiant': 'Rising Pune Supergiants'}, inplace=True)
 
 print(matches.head())
 
