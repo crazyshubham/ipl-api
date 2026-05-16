@@ -14,8 +14,14 @@ class NpEncoder(json.JSONEncoder):
             return obj.tolist()
         return super(NpEncoder, self).default(obj)
 
-ipl_matches = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2DUdUbaKx_Co9F0FSnIlyS-8kp4aKv_I0-qzNeghiZHAI_hw94gKG22XTxNJHMFnFVKsO4xWOdIs/pub?gid=1655759976&single=true&output=csv"
+ipl_matches = "https://raw.githubusercontent.com/crazyshubham/ipl-api/main/matches_clean.csv"
 matches = pd.read_csv(ipl_matches)
+matches.replace({
+    'Royal Challengers Bangalore': 'Royal Challengers Bengaluru',
+    'Delhi Daredevils': 'Delhi Capitals',
+    'Kings XI Punjab': 'Punjab Kings',
+    'Rising Pune Supergiant': 'Rising Pune Supergiants'
+}, inplace=True)
 
 ipl_ball = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRu6cb6Pj8C9elJc5ubswjVTObommsITlNsFy5X0EiBY7S-lsHEUqx3g_M16r50Ytjc0XQCdGDyzE_Y/pub?output=csv"
 balls = pd.read_csv(ipl_ball)
