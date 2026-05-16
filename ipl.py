@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-ipl_matches = "https://raw.githubusercontent.com/crazyshubham/ipl-api/main/match_clean.csv"
+ipl_matches = "https://raw.githubusercontent.com/crazyshubham/ipl-api/main/matches_clean.csv"
 matches = pd.read_csv(ipl_matches)
 matches.replace({'Royal Challengers Bangalore': 'Royal Challengers Bengaluru', 'Delhi Daredevils': 'Delhi Capitals', 'Kings XI Punjab': 'Punjab Kings', 'Rising Pune Supergiant': 'Rising Pune Supergiants'}, inplace=True)
 
