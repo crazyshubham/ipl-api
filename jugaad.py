@@ -16,6 +16,7 @@ class NpEncoder(json.JSONEncoder):
 
 ipl_matches = "https://raw.githubusercontent.com/crazyshubham/ipl-api/main/matches_clean.csv"
 matches = pd.read_csv(ipl_matches)
+matches.dropna(subset=['Team1', 'Team2'], inplace=True)
 matches.replace({
     'Royal Challengers Bangalore': 'Royal Challengers Bengaluru',
     'Delhi Daredevils': 'Delhi Capitals',
@@ -28,9 +29,10 @@ balls = pd.read_csv(ipl_ball)
 
 ball_withmatch = balls.merge(matches, on='ID', how='inner').copy()
 ball_withmatch['BowlingTeam'] = ball_withmatch.Team1 + ball_withmatch.Team2
-ball_withmatch['BowlingTeam'] = ball_withmatch[['BowlingTeam', 'BattingTeam']].apply(lambda x: x.values[0].replace(x.values[1], ''), axis=1)
+ball_withmatch['BowlingTeam'] = ball_withmatch[['BowlingTeam', 'BattingTeam']].apply(
+    lambda x: str(x.values[0]).replace(str(x.values[1]), '') if pd.notna(x.values[0]) and pd.notna(x.values[1]) else '', axis=1
+)
 batter_data = ball_withmatch[np.append(balls.columns.values, ['BowlingTeam', 'Player_of_Match'])]
-
 
 def team1vsteam2(team, team2):
     df = matches[((matches['Team1'] == team) & (matches['Team2'] == team2)) | (
