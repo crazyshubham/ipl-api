@@ -3,6 +3,7 @@ import numpy as np
 
 ipl_matches = "https://raw.githubusercontent.com/crazyshubham/ipl-api/main/matches_clean.csv"
 matches = pd.read_csv(ipl_matches)
+matches.dropna(subset=['Team1', 'Team2'], inplace=True)
 matches.replace({'Royal Challengers Bangalore': 'Royal Challengers Bengaluru', 'Delhi Daredevils': 'Delhi Capitals', 'Kings XI Punjab': 'Punjab Kings', 'Rising Pune Supergiant': 'Rising Pune Supergiants'}, inplace=True)
 
 print(matches.head())
