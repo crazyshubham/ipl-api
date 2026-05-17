@@ -154,16 +154,19 @@ gunicorn
 
 ---
 
-## 🌐 Deployment (Render)
+## 🌐 Deployment (Versal)
 
 1. Push code to GitHub
-2. Create a new **Web Service** on [Render](https://render.com)
-3. Connect your GitHub repository
-4. Set the following:
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn app:app`
-5. Deploy!
-
+2. Go to [vercel.com](https://vercel.com) and import your repo
+3. Add a `vercel.json` file:
+```json
+{
+  "version": 2,
+  "builds": [{ "src": "app.py", "use": "@vercel/python" }],
+  "routes": [{ "src": "/(.*)", "dest": "app.py" }]
+}
+```
+4. Deploy!
 ---
 
 ## 🛠️ Built With
