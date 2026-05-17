@@ -6,7 +6,7 @@ A Flask-based REST API that provides comprehensive IPL (Indian Premier League) c
 
 ## 🚀 Live Demo
 
-**API Base URL:** `https://ipl-api-srwd.onrender.com`
+**API Base URL:** `https://ipl-api-tau.vercel.app`
 
 ---
 
